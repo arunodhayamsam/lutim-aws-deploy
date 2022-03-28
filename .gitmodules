@@ -1,0 +1,3 @@
+[submodule "ansible-role-lutim"]
+	path = ansible-role-lutim
+	url = https://github.com/arunodhayamsam/ansible-role-lutim.git
