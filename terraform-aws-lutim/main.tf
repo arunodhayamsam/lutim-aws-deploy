@@ -10,7 +10,6 @@ resource "aws_vpc" "MAIN" {
 }
 
 # Create InternetGateWay and attach to VPC
-
 resource "aws_internet_gateway" "IGW" {
   vpc_id           = "${aws_vpc.MAIN.id}"
   tags = {
@@ -19,7 +18,6 @@ resource "aws_internet_gateway" "IGW" {
 }
 
 # Create a public subnet
-
 resource "aws_subnet" "publicsubnet" {
   vpc_id                  = "${aws_vpc.MAIN.id}" 
   cidr_block              = "${var.public_subnet_cidr}"
@@ -75,8 +73,18 @@ resource "aws_security_group" "security" {
   
 }
 
-#Create key_pair for the instance
+# Add ubuntu AMI
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners = ["099720109477"]
 
+    filter {
+        name   = "name"
+        values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    }
+}
+
+#Create key_pair for the instance
 resource "aws_key_pair" "genkey" {
   key_name           = "lutim.webapp"
   public_key         = "${file(var.public_key)}"
@@ -84,7 +92,7 @@ resource "aws_key_pair" "genkey" {
 
 # Craete ec2 instance
 resource "aws_instance" "ec2_instance" {
-  ami                = "ami-04505e74c0741db8d"
+  ami                = "${data.aws_ami.ubuntu.id}"
   instance_type      = "t2.medium"
   associate_public_ip_address = "true"
   subnet_id          = "${aws_subnet.publicsubnet.id}"
